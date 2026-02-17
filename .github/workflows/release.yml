@@ -43,6 +43,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
+            type=raw,value=latest
 
       - name: Build and push Docker image
         id: build
@@ -61,18 +62,18 @@ jobs:
             echo "| Property | Value |"
             echo "|----------|-------|"
             echo "| Registry | \`${{ env.REGISTRY }}\` |"
-            echo "| Image | \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}\` |"
+            echo "| Image | \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}\` |"
             echo "| Digest | \`${{ steps.build.outputs.digest }}\` |"
             echo ""
             echo '```bash'
-            echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}"
+            echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Write image manifest to file
         run: |
           cat > image-manifest.txt <<EOF
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
           digest: ${{ steps.build.outputs.digest }}
           tags: ${{ steps.meta.outputs.tags }}
           EOF
@@ -86,7 +87,7 @@ jobs:
             ## Docker Image
 
             \`\`\`bash
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
             \`\`\`
 
             **Digest**: \`${{ steps.build.outputs.digest }}\`
