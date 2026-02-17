@@ -1,0 +1,38 @@
+.git/
+.github/
+.gitignore
+.golangci.yml
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+cq-source-postgres
+*.exe
+*.test
+*.out
+*.prof
+
+# Test and E2E
+e2e/
+coverage.*
+
+# Documentation
+*.md
+!go.mod
+!go.sum
+docs/
+specs/
+scripts/
+
+# Environment
+.env
+.env.*
+docker-compose.override.yml
+
+# Dockerfile itself
+Dockerfile
+.dockerignore

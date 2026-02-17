@@ -1,0 +1,57 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Start PostgreSQL
+        run: |
+          docker run -d --name test-postgres \
+            -e POSTGRES_USER=cq \
+            -e POSTGRES_PASSWORD=cq \
+            -e POSTGRES_DB=cq_test \
+            -p 5432:5432 \
+            postgres:16 \
+            -c wal_level=logical
+          for i in $(seq 1 30); do
+            docker exec test-postgres pg_isready -U cq -d cq_test && break
+            sleep 1
+          done
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+      - name: Unit tests
+        run: go test ./client/... ./resources/... -v -count=1
+
+      - name: E2E tests
+        env:
+          CQ_SOURCE_PG_TEST_CONN: "postgres://cq:cq@localhost:5432/cq_test?sslmode=disable"
+        run: go test ./e2e/... -v -count=1 -timeout 120s
+
+      - name: Build
+        run: go build -o cq-source-postgres .

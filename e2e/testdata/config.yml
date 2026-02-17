@@ -1,0 +1,12 @@
+# CloudQuery E2E Test Configuration
+kind: source
+spec:
+  name: postgresql
+  path: infobloxopen/postgresql
+  version: development
+  tables: ["*"]
+  destinations: ["test"]
+  spec:
+    connection_string: "${CQ_SOURCE_PG_TEST_CONN}"
+    pgx_log_level: "info"
+    rows_per_record: 500

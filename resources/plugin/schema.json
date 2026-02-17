@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/infobloxopen/cq-source-postgres/plugin-spec",
+  "title": "CloudQuery PostgreSQL Source Plugin Spec",
+  "description": "Configuration schema for the cq-source-postgres CloudQuery source plugin.",
+  "type": "object",
+  "required": ["connection_string"],
+  "additionalProperties": false,
+  "properties": {
+    "connection_string": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Connection string to connect to PostgreSQL. Supports URL format (postgres://...) and DSN format (key=value pairs). See pgxpool documentation for full syntax."
+    },
+    "pgx_log_level": {
+      "type": "string",
+      "enum": ["error", "warn", "info", "debug", "trace"],
+      "default": "error",
+      "description": "Log level for pgx database driver events."
+    },
+    "cdc_id": {
+      "type": "string",
+      "description": "If set to a non-empty string, enables CDC mode via PostgreSQL logical replication. Must be unique across all sources targeting the same database."
+    },
+    "rows_per_record": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 500,
+      "description": "Number of rows to pack into a single Apache Arrow record during sync."
+    },
+    "destination_table_name": {
+      "type": "string",
+      "default": "{{TABLE}}",
+      "description": "Template for destination table names. Supports placeholders: {{TABLE}}, {{UUID}}, {{YEAR}}, {{MONTH}}, {{DAY}}, {{HOUR}}, {{MINUTE}}. At least one of {{TABLE}} or {{UUID}} is required. Dynamic time-based placeholders are not allowed when cdc_id is set.",
+      "pattern": "(\\{\\{TABLE\\}\\}|\\{\\{UUID\\}\\})"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+# Binaries
+cq-source-postgres
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output
+*.out
+*.prof
+*.prof.*
+
+# Go workspace
+go.work
+go.work.sum
+
+# Dependencies (vendor not used)
+vendor/
+
+# Build output
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Coverage
+coverage.out
+coverage.html
+
+# Docker
+docker-compose.override.yml
+
+# Docs (auto-generated)
+docs/tables/*.md
