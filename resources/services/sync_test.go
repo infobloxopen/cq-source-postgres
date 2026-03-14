@@ -133,17 +133,17 @@ func TestConvertPgValue_GeometryTypes(t *testing.T) {
 	})
 }
 
-func TestConvertPgValue_Date(t *testing.T) {
-	t.Run("time.Time date-only", func(t *testing.T) {
+func TestConvertPgValue_Timestamp(t *testing.T) {
+	t.Run("time.Time midnight passes through as time.Time", func(t *testing.T) {
 		d := time.Date(2026, 1, 15, 0, 0, 0, 0, time.UTC)
 		result := convertPgValue(d)
-		assert.Equal(t, "2026-01-15", result)
+		assert.Equal(t, d, result) // must stay time.Time, not become "2026-01-15"
 	})
 
-	t.Run("time.Time with time component", func(t *testing.T) {
+	t.Run("time.Time with time component passes through", func(t *testing.T) {
 		d := time.Date(2026, 1, 15, 12, 30, 0, 0, time.UTC)
 		result := convertPgValue(d)
-		assert.Equal(t, d, result) // passthrough — not date-only
+		assert.Equal(t, d, result)
 	})
 
 	t.Run("pgtype.Date", func(t *testing.T) {

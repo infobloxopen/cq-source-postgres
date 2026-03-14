@@ -180,11 +180,10 @@ func convertPgValue(value any) any {
 		return "(" + result + ")"
 
 	case time.Time:
-		// SDK's date32 type expects "YYYY-MM-DD" format, not the full timestamp
-		// that pgx returns for date columns.
-		if v.Hour() == 0 && v.Minute() == 0 && v.Second() == 0 && v.Nanosecond() == 0 {
-			return v.Format("2006-01-02")
-		}
+		// Always pass time.Time through — the SDK handles it natively for both
+		// timestamp and date Arrow types. The previous midnight check incorrectly
+		// converted timestamps at midnight to date-only strings, causing the SDK
+		// to panic when parsing them as timestamps.
 		return v
 
 	case pgtype.Date:
